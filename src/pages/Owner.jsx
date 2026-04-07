@@ -50,6 +50,14 @@ const Owner = () => {
         setNewPin('');
     };
 
+    const handleDeleteStaff = async (id) => {
+        if (!window.confirm("Are you sure you want to remove this staff member?")) return;
+        if (supabase) {
+            const { error } = await supabase.from('staff_profiles').delete().eq('id', id);
+            if (!error) showToast('Staff removed successfully');
+        }
+    };
+
     const handleAddStaff = async () => {
         if (!newStaffName.trim()) return showToast('Name is required', true);
         if (!newStaffPin || newStaffPin.length !== 4) return showToast('PIN must be 4 digits', true);
@@ -180,13 +188,23 @@ const Owner = () => {
                                             <button style={{ background: 'transparent', border: '1px solid var(--border)', color: 'var(--text)', borderRadius: '6px', padding: '4px 12px', fontSize: '11px', cursor: 'pointer' }} onClick={() => { setEditingPinId(null); setNewPin(''); }}>Cancel</button>
                                         </div>
                                     ) : (
-                                        <button 
-                                            className="btn-primary" 
-                                            style={{ padding: '6px 12px', fontSize: '11px', background: 'var(--surface2)', border: '1px solid var(--border)', color: 'var(--text)' }} 
-                                            onClick={() => { setEditingPinId(profile.id); setNewPin(''); }}
-                                        >
-                                            Edit PIN
-                                        </button>
+                                        <>
+                                            <button 
+                                                className="btn-primary" 
+                                                style={{ padding: '6px 12px', fontSize: '11px', background: 'var(--surface2)', border: '1px solid var(--border)', color: 'var(--text)' }} 
+                                                onClick={() => { setEditingPinId(profile.id); setNewPin(''); }}
+                                            >
+                                                Edit PIN
+                                            </button>
+                                            {profile.role !== 'Owner' && (
+                                                <button 
+                                                    style={{ marginLeft: '8px', padding: '6px 12px', fontSize: '11px', background: 'rgba(255,0,110,.1)', border: '1px solid rgba(255,0,110,.3)', color: 'var(--neon2)', borderRadius: '6px', cursor: 'pointer' }} 
+                                                    onClick={() => handleDeleteStaff(profile.id)}
+                                                >
+                                                    Remove
+                                                </button>
+                                            )}
+                                        </>
                                     )}
                                 </div>
                             </div>

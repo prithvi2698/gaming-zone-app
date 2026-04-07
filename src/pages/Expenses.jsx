@@ -23,15 +23,14 @@ const Expenses = () => {
             date: form.date
         };
 
-        setExpenses(prev => [exp, ...prev]);
-        setModalOpen(false);
-        setForm({ name: '', amount: '', category: 'Other', date: new Date().toISOString().slice(0, 10) });
-        showToast('Expense Added', false);
-
         if (supabase) {
             try { await supabase.from('expenses').insert([exp]); }
             catch { console.warn('Supabase expense sync failed'); }
         }
+
+        setModalOpen(false);
+        setForm({ name: '', amount: '', category: 'Other', date: new Date().toISOString().slice(0, 10) });
+        showToast('Expense Added', false);
     };
 
     const monthTotal = expenses.reduce((sum, e) => sum + e.amount, 0);

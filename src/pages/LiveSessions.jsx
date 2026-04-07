@@ -24,30 +24,23 @@ const LiveSessions = () => {
 
     const handleQuickAdj = (id, direction) => {
         playSound('click');
-        let newSeconds = 0;
-        setLiveSessions(prev => prev.map(s => {
-            if (s.id !== id || s.isOpen) return s;
-            newSeconds = s.bookedSeconds + (direction * 5 * 60);
-            return { ...s, bookedSeconds: newSeconds };
-        }));
+        const session = liveSessions.find(s => s.id === id);
+        if (!session || session.isOpen) return;
+        const newSeconds = session.bookedSeconds + (direction * 5 * 60);
+        
         if (newSeconds) updateSupa(id, { bookedSeconds: newSeconds });
         showToast(`Adjusted session by ${direction > 0 ? '+5m' : '-5m'}`, false);
     };
 
     const handleExtend = () => {
         const min = parseInt(modal.data.extendMins || 60, 10);
-        let newDur = 0, newSec = 0, newRate = 0, label = '';
+        const session = liveSessions.find(s => s.id === modal.sessionId);
+        if (!session) return;
 
-        setLiveSessions(prev => prev.map(s => {
-            if (s.id !== modal.sessionId) return s;
-            newDur = (s.duration || 0) + min;
-            label = newDur % 60 === 0 ? `${newDur / 60} Hr` : `${newDur} Min`;
-            newSec = s.bookedSeconds + (min * 60);
-            newRate = getRate(s.station, newDur, s.players);
-            return {
-                ...s, duration: newDur, durationLabel: label, bookedSeconds: newSec, rate: newRate
-            };
-        }));
+        const newDur = (session.duration || 0) + min;
+        const label = newDur % 60 === 0 ? `${newDur / 60} Hr` : `${newDur} Min`;
+        const newSec = session.bookedSeconds + (min * 60);
+        const newRate = getRate(session.station, newDur, session.players);
 
         updateSupa(modal.sessionId, { duration: newDur, durationLabel: label, bookedSeconds: newSec, rate: newRate });
         playSound('success');
@@ -57,25 +50,21 @@ const LiveSessions = () => {
 
     const handleAddFood = (item) => {
         playSound('success');
-        let updatedOrders = [];
-        setLiveSessions(prev => prev.map(s => {
-            if (s.id !== modal.sessionId) return s;
-            updatedOrders = [{ id: item.id, name: item.name, emoji: item.emoji, price: item.price, addedAt: new Date().toISOString() }, ...s.foodOrders];
-            return { ...s, foodOrders: updatedOrders };
-        }));
+        const session = liveSessions.find(s => s.id === modal.sessionId);
+        if (!session) return;
+        const updatedOrders = [{ id: item.id, name: item.name, emoji: item.emoji, price: item.price, addedAt: new Date().toISOString() }, ...session.foodOrders];
+
         updateSupa(modal.sessionId, { foodOrders: updatedOrders });
         showToast(`${item.name} added to session`, false);
     };
 
     const handleRemoveFood = (idx) => {
         playSound('click');
-        let updatedOrders = [];
-        setLiveSessions(prev => prev.map(s => {
-            if (s.id !== modal.sessionId) return s;
-            updatedOrders = [...s.foodOrders];
-            updatedOrders.splice(idx, 1);
-            return { ...s, foodOrders: updatedOrders };
-        }));
+        const session = liveSessions.find(s => s.id === modal.sessionId);
+        if (!session) return;
+        const updatedOrders = [...session.foodOrders];
+        updatedOrders.splice(idx, 1);
+        
         updateSupa(modal.sessionId, { foodOrders: updatedOrders });
     };
 
@@ -101,8 +90,6 @@ const LiveSessions = () => {
         };
 
         playSound('success');
-        setHistory(prev => [endedSession, ...prev]);
-        setLiveSessions(prev => prev.filter(s => s.id !== session.id));
         showToast(`Session Ended. Collected ₹${endedSession.finalAmountPaid}`, false);
         closeModal();
 

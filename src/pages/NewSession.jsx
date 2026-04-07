@@ -76,11 +76,10 @@ const NewSession = () => {
                 await supabase.from('sessions').insert([newSess]);
                 console.log('Synced session implicitly to cloud');
             }
-            catch (e) { console.warn('Supabase sync failed, continuing locally', e); }
+            catch (e) { console.warn('Supabase sync failed', e); }
         }
 
         playSound('success');
-        setLiveSessions(prev => [newSess, ...prev]);
         showToast("Session Started!", false);
         navigate('/live');
     };
