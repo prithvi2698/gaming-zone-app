@@ -1,0 +1,221 @@
+.dashboard-container {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.welcome-banner {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    background: linear-gradient(90deg, rgba(0, 245, 255, 0.05) 0%, transparent 100%);
+    padding: 24px;
+    border-radius: 16px;
+    border-left: 4px solid var(--neon);
+}
+
+.welcome-h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.5rem;
+    margin-bottom: 4px;
+}
+
+.welcome-sub {
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
+.time-badge {
+    background: var(--surface2);
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    border: 1px solid var(--border);
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+}
+
+.stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.stat-title {
+    font-size: 0.75rem;
+    color: var(--muted);
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.stat-value {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 800;
+}
+
+.stat-sub {
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.text-success {
+    color: var(--success);
+}
+
+.text-warning {
+    color: var(--warning);
+}
+
+.dash-two-col {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+}
+
+@media (min-width: 1024px) {
+    .dash-two-col {
+        grid-template-columns: 2fr 1fr;
+    }
+}
+
+.dash-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.section-title {
+    font-size: 0.85rem;
+    color: var(--muted);
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 12px;
+}
+
+.actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+}
+
+.action-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 20px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+}
+
+.action-icon {
+    font-size: 1.8rem;
+}
+
+.primary {
+    background: var(--text);
+    color: var(--bg);
+}
+
+.primary:hover {
+    background: #fff;
+    transform: scale(1.02);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+}
+
+.secondary {
+    background: rgba(168, 85, 247, 0.15);
+    color: var(--neon3);
+    border: 1px solid rgba(168, 85, 247, 0.3);
+}
+
+.secondary:hover {
+    background: rgba(168, 85, 247, 0.25);
+    transform: scale(1.02);
+}
+
+.outline {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text);
+}
+
+.outline:hover {
+    background: rgba(255, 255, 255, 0.05);
+    transform: scale(1.02);
+}
+
+.hw-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.hw-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--surface2);
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+}
+
+.hw-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+}
+
+.hw-info {
+    flex: 1;
+}
+
+.hw-status {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.hw-status.pulse {
+    background: var(--success);
+    box-shadow: 0 0 8px var(--success);
+    animation: pulse 2s infinite;
+}
+
+.hw-status.online {
+    background: var(--success);
+    box-shadow: 0 0 8px var(--success);
+}
+
+.hw-status.error {
+    background: var(--neon2);
+    box-shadow: 0 0 8px var(--neon2);
+}
