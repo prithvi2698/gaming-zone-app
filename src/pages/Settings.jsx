@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
 import { playSound } from '../lib/sounds';
+import { supabase } from '../lib/supabase';
 
 const Settings = () => {
     const navigate = useNavigate();
@@ -55,21 +56,25 @@ const Settings = () => {
 
     const closeModal = () => setActiveModal(null);
 
-    const handleSaveArena = () => {
-        setAppSettings(prev => ({ ...prev, arenaName: tempArenaName }));
+    const handleSaveArena = async () => {
+        const newVal = { ...appSettings, arenaName: tempArenaName }; 
+        if (supabase) await supabase.from('app_settings').upsert({ key: 'GLOBAL_SETTINGS', value: newVal });
         showToast('Arena Name Updated');
         closeModal();
     };
 
-    const handleSaveHours = () => {
-        setAppSettings(prev => ({ ...prev, openTime: tempOpenTime, closeTime: tempCloseTime }));
+    const handleSaveHours = async () => {
+        const newVal = { ...appSettings, openTime: tempOpenTime, closeTime: tempCloseTime };
+        if (supabase) await supabase.from('app_settings').upsert({ key: 'GLOBAL_SETTINGS', value: newVal });
         showToast('Working Hours Updated');
         closeModal();
     };
 
-    const handleSavePricing = () => {
-        setPC_RATES(tempPCRates);
-        setPS5_RATES(tempPS5Rates);
+    const handleSavePricing = async () => {
+        if (supabase) {
+            await supabase.from('app_settings').upsert({ key: 'PC_RATES', value: tempPCRates });
+            await supabase.from('app_settings').upsert({ key: 'PS5_RATES', value: tempPS5Rates });
+        }
         showToast('Pricing Updated');
         closeModal();
     };

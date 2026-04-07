@@ -111,26 +111,105 @@ export const AppProvider = ({ children }) => {
         return 0;
     }, [PS5_RATES, PC_RATES]);
 
-    // Initial Supabase Data Fetch
+    // Initial Supabase Data Fetch & Subscriptions
     useEffect(() => {
+        if (!supabase) return;
+
         const fetchData = async () => {
-            if (!supabase) return; // Silent fallback to local array default if not configured
             try {
+                // Fetch Settings
+                const { data: settingsData } = await supabase.from('app_settings').select('*');
+                if (settingsData) {
+                    const pcRates = settingsData.find(s => s.key === 'PC_RATES');
+                    if (pcRates) setPC_RATES(pcRates.value);
+                    
+                    const ps5Rates = settingsData.find(s => s.key === 'PS5_RATES');
+                    if (ps5Rates) setPS5_RATES(ps5Rates.value);
+                    
+                    const globalSettings = settingsData.find(s => s.key === 'GLOBAL_SETTINGS');
+                    if (globalSettings) setAppSettings(globalSettings.value);
+                }
+
+                // Fetch Staff
+                const { data: staffData } = await supabase.from('staff_profiles').select('*').order('id');
+                if (staffData && staffData.length > 0) setStaffProfiles(staffData);
+
+                // Fetch Sessions
                 const { data: sessionsData } = await supabase.from('sessions').select('*').eq('status', 'active');
                 if (sessionsData) setLiveSessions(sessionsData);
 
+                // Fetch History
                 const { data: historyData } = await supabase.from('history').select('*').order('ended_at', { ascending: false });
                 if (historyData) setHistory(historyData);
 
+                // Fetch Expenses
                 const { data: exps } = await supabase.from('expenses').select('*').order('date', { ascending: false });
                 if (exps) setExpenses(exps);
 
-                // You can add accounts later when table is defined.
             } catch (err) {
-                console.warn("Supabase fetch error, fallback to initial state:", err);
+                console.warn("Supabase fetch error:", err);
             }
         };
+
         fetchData();
+
+        // Realtime Subscription
+        const channel = supabase.channel('schema-db-changes')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'app_settings' }, (payload) => {
+                const { key, value } = payload.new;
+                if (key === 'PC_RATES') setPC_RATES(value);
+                else if (key === 'PS5_RATES') setPS5_RATES(value);
+                else if (key === 'GLOBAL_SETTINGS') setAppSettings(value);
+            })
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'staff_profiles' }, (payload) => {
+                if (payload.eventType === 'INSERT') {
+                    setStaffProfiles(prev => [...prev, payload.new].sort((a,b)=>a.id.localeCompare(b.id)));
+                } else if (payload.eventType === 'UPDATE') {
+                    setStaffProfiles(prev => prev.map(p => p.id === payload.new.id ? payload.new : p));
+                } else if (payload.eventType === 'DELETE') {
+                    setStaffProfiles(prev => prev.filter(p => p.id !== payload.old.id));
+                }
+            })
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'sessions' }, (payload) => {
+                if (payload.eventType === 'INSERT') {
+                    if (payload.new.status === 'active') setLiveSessions(prev => {
+                        if (prev.find(s => s.id === payload.new.id)) return prev;
+                        return [...prev, payload.new];
+                    });
+                } else if (payload.eventType === 'UPDATE') {
+                    if (payload.new.status === 'active') {
+                        setLiveSessions(prev => {
+                            const exists = prev.find(s => s.id === payload.new.id);
+                            return exists ? prev.map(s => s.id === payload.new.id ? payload.new : s) : [...prev, payload.new];
+                        });
+                    } else {
+                        setLiveSessions(prev => prev.filter(s => s.id !== payload.new.id));
+                    }
+                } else if (payload.eventType === 'DELETE') {
+                    setLiveSessions(prev => prev.filter(s => s.id !== payload.old.id));
+                }
+            })
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'expenses' }, (payload) => {
+                if (payload.eventType === 'INSERT') {
+                    setExpenses(prev => {
+                       if (prev.find(e => e.id === payload.new.id)) return prev;
+                       return [payload.new, ...prev].sort((a,b) => new Date(b.date) - new Date(a.date));
+                    });
+                }
+            })
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'history' }, (payload) => {
+                if (payload.eventType === 'INSERT') {
+                    setHistory(prev => {
+                       if (prev.find(h => h.id === payload.new.id)) return prev;
+                       return [payload.new, ...prev].sort((a,b) => new Date(b.ended_at) - new Date(a.ended_at));
+                    });
+                }
+            })
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel);
+        };
     }, []);
 
     // Timer Tick & Alarm Logic

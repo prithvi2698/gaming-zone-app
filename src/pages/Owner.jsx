@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAppContext } from '../context/AppContext';
+import { supabase } from '../lib/supabase';
 
 const Owner = () => {
     const { history, expenses, staffProfiles, setStaffProfiles, appSettings, activeProfile, showToast } = useAppContext();
@@ -39,15 +40,17 @@ const Owner = () => {
     const totalUsers = staffProfiles?.length || 0;
     const totalSessions = revHistory.length;
 
-    const handleSavePin = (id) => {
+    const handleSavePin = async (id) => {
         if (!newPin || newPin.length !== 4) return showToast('PIN must be 4 digits', true);
-        setStaffProfiles(prev => prev.map(p => p.id === id ? { ...p, pin: newPin } : p));
-        showToast('PIN Updated Successfully');
+        if (supabase) {
+            const { error } = await supabase.from('staff_profiles').update({ pin: newPin }).eq('id', id);
+            if (!error) showToast('PIN Updated Successfully');
+        }
         setEditingPinId(null);
         setNewPin('');
     };
 
-    const handleAddStaff = () => {
+    const handleAddStaff = async () => {
         if (!newStaffName.trim()) return showToast('Name is required', true);
         if (!newStaffPin || newStaffPin.length !== 4) return showToast('PIN must be 4 digits', true);
         
@@ -59,7 +62,9 @@ const Owner = () => {
             is_active: true
         };
         
-        setStaffProfiles(prev => [...prev, newProfile]);
+        if (supabase) {
+            await supabase.from('staff_profiles').insert([newProfile]);
+        }
         showToast('Staff added successfully');
         
         setIsAddingStaff(false);
