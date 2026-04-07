@@ -93,13 +93,52 @@ const Owner = () => {
         setNewStaffPin('');
     };
 
+    const handleExportData = () => {
+        if (revHistory.length === 0) return showToast('No sessions to export', true);
+        
+        const headers = ["Date", "Session Name", "Station", "Duration", "Base Rate (Rs)", "F&B Total (Rs)", "Total Paid (Rs)", "Payment Mode"];
+        const rows = revHistory.map(s => {
+            const date = new Date(s.ended_at).toLocaleString().replace(/,/g, '');
+            const name = `"${s.name}"`;
+            return [
+                date,
+                name,
+                s.station,
+                s.durationLabel || '',
+                s.finalBaseRate || 0,
+                s.finalFoodTotal || 0,
+                s.finalAmountPaid || 0,
+                s.finalPaymentMode || 'Cash'
+            ].join(',');
+        });
+        
+        const csvContent = "data:text/csv;charset=utf-8," + [headers.join(','), ...rows].join('\n');
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `battle_arena_sessions_${period}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        showToast('Exported to CSV successfully');
+    };
+
     return (
         <div className="page active" id="page-owner" style={{ animation: 'fadeIn .2s ease' }}>
-            <div className="page-header">
-                <h2>OWNER DASHBOARD</h2>
-                <div style={{ fontFamily: "'Orbitron', monospace", fontSize: '9px', fontWeight: '800', background: 'var(--surface2)', padding: '6px 10px', borderRadius: '8px', border: '1px solid var(--gold)', color: 'var(--gold)' }}>
-                    👑 OWNER VIEW
+            <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
+                    <h2>OWNER DASHBOARD</h2>
+                    <div style={{ fontFamily: "'Orbitron', monospace", fontSize: '9px', fontWeight: '800', background: 'var(--surface2)', padding: '6px 10px', borderRadius: '8px', border: '1px solid var(--gold)', color: 'var(--gold)' }}>
+                        👑 OWNER
+                    </div>
                 </div>
+                <button 
+                    onClick={handleExportData}
+                    style={{ padding: '6px 12px', fontSize: '11px', background: 'rgba(0,245,255,.1)', border: '1px solid rgba(0,245,255,.3)', color: 'var(--neon)', borderRadius: '6px', cursor: 'pointer', fontFamily: "'Orbitron', monospace", fontWeight: '700' }}
+                >
+                    📥 CSV
+                </button>
             </div>
 
             <div className="filter-chips" style={{ padding: '0 16px 14px' }}>
