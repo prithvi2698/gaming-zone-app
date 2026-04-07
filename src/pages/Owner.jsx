@@ -12,6 +12,7 @@ const Owner = () => {
     const [newStaffName, setNewStaffName] = useState('');
     const [newStaffRole, setNewStaffRole] = useState('Staff');
     const [newStaffPin, setNewStaffPin] = useState('');
+    const [confirmDeleteId, setConfirmDeleteId] = useState(null);
 
     // Simple period filter function
     const inPeriod = (dateStr) => {
@@ -51,10 +52,21 @@ const Owner = () => {
     };
 
     const handleDeleteStaff = async (id) => {
-        if (!window.confirm("Are you sure you want to remove this staff member?")) return;
+        if (confirmDeleteId !== id) {
+            setConfirmDeleteId(id);
+            setTimeout(() => setConfirmDeleteId(null), 3000);
+            return;
+        }
+        
         if (supabase) {
             const { error } = await supabase.from('staff_profiles').delete().eq('id', id);
-            if (!error) showToast('Staff removed successfully');
+            if (!error) {
+                showToast('Staff removed successfully');
+                setConfirmDeleteId(null);
+            } else {
+                console.error("Delete failed", error);
+                showToast('Failed to remove staff', true);
+            }
         }
     };
 
@@ -198,10 +210,10 @@ const Owner = () => {
                                             </button>
                                             {profile.role !== 'Owner' && (
                                                 <button 
-                                                    style={{ marginLeft: '8px', padding: '6px 12px', fontSize: '11px', background: 'rgba(255,0,110,.1)', border: '1px solid rgba(255,0,110,.3)', color: 'var(--neon2)', borderRadius: '6px', cursor: 'pointer' }} 
+                                                    style={{ marginLeft: '8px', padding: '6px 12px', fontSize: '11px', background: confirmDeleteId === profile.id ? 'var(--warning)' : 'rgba(255,0,110,.1)', border: confirmDeleteId === profile.id ? '1px solid var(--warning)' : '1px solid rgba(255,0,110,.3)', color: confirmDeleteId === profile.id ? '#000' : 'var(--neon2)', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }} 
                                                     onClick={() => handleDeleteStaff(profile.id)}
                                                 >
-                                                    Remove
+                                                    {confirmDeleteId === profile.id ? 'Confirm?' : 'Remove'}
                                                 </button>
                                             )}
                                         </>
