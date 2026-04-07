@@ -15,7 +15,9 @@ const Sidebar = () => {
     return (
         <aside className="sidebar">
             <div className="sidebar-logo">
-                <div className="logo">BATTLE<span>ARENA</span></div>
+                <div className="logo" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    BATTLE<span style={{ fontSize: '10px', color: 'var(--success)' }}>🟢 LIVE</span>
+                </div>
                 <div className="staff-badge">STAFF PANEL</div>
             </div>
 
