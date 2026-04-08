@@ -1,4 +1,4 @@
-# Battle Arena Dashboard
+# Pixel Gaming Dashboard
 
 A Next-generation, pixel-perfect React application for managing your Gaming Lounge sessions, finances, and points system with a distinct Neon-Cyberpunk aesthetic. Complete with synthetic Web Audio API triggers and Supabase cloud infrastructure!
 

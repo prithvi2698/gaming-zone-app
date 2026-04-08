@@ -4,7 +4,7 @@ import { supabase } from '../lib/supabase';
 import { playSound } from '../lib/sounds';
 
 const Accounts = () => {
-    const { accountBalances, history, setAccountBalances, showToast } = useAppContext();
+    const { accountBalances, history, setAccountBalances, showToast, appSettings } = useAppContext();
     const [modalOpen, setModalOpen] = useState(false);
     const [form, setForm] = useState({ account: 'Cash Register', amount: '', type: 'deposit' });
 
@@ -61,7 +61,8 @@ const Accounts = () => {
         const encodedUri = encodeURI(csvContent);
         const link = document.createElement("a");
         link.setAttribute("href", encodedUri);
-        link.setAttribute("download", `battle_arena_accounts.csv`);
+        const arenaPrefix = (appSettings?.arenaName || 'pixel_gaming').replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
+        link.setAttribute("download", `${arenaPrefix}_accounts.csv`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);

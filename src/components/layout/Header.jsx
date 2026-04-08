@@ -17,7 +17,7 @@ const pageTitles = {
 const Header = ({ drawerOpen, onToggleDrawer }) => {
     const location = useLocation();
     const title = pageTitles[location.pathname] || '';
-    const { notifications } = useAppContext();
+    const { notifications, getLogoParts } = useAppContext();
     const hasUnread = notifications.some(n => n.unread);
 
     return (
@@ -26,7 +26,7 @@ const Header = ({ drawerOpen, onToggleDrawer }) => {
                 <div className={`hamburger ${drawerOpen ? 'open' : ''}`} onClick={onToggleDrawer}>
                     <span></span><span></span><span></span>
                 </div>
-                <div className="logo">BATTLE<span>ARENA</span></div>
+                <div className="logo">{getLogoParts().first}<span>{getLogoParts().rest}</span></div>
                 <div className="staff-badge">STAFF</div>
             </div>
 

@@ -4,7 +4,7 @@ import { playSound } from '../lib/sounds';
 import './LoginScreen.css';
 
 const LoginScreen = () => {
-    const { appSettings, staffProfiles, setActiveProfile } = useAppContext();
+    const { appSettings, staffProfiles, setActiveProfile, getLogoParts } = useAppContext();
     const [step, setStep] = useState('profiles'); // 'profiles' or 'pin'
     const [selectedProfile, setSelectedProfile] = useState(null);
     const [pinInput, setPinInput] = useState(['', '', '', '']);
@@ -86,7 +86,7 @@ const LoginScreen = () => {
         <div className="login-screen-overlay">
             <div className="ls-modal">
                 <div className="ls-modal-header">
-                    <div className="ls-logo">BATTLE<span>ARENA</span></div>
+                    <div className="ls-logo">{getLogoParts().first}<span>{getLogoParts().rest}</span></div>
                     <div className="ls-sub">{appSettings.arenaName.toUpperCase()} &middot; STAFF PANEL</div>
                 </div>
 

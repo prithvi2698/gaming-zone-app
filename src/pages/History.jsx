@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useAppContext } from '../context/AppContext';
 
 const History = () => {
-    const { history } = useAppContext();
+    const { history, appSettings } = useAppContext();
     const [search, setSearch] = useState('');
     const [period, setPeriod] = useState('today');
 
@@ -71,7 +71,8 @@ const History = () => {
         const encodedUri = encodeURI(csvContent);
         const link = document.createElement("a");
         link.setAttribute("href", encodedUri);
-        link.setAttribute("download", `battle_arena_history_${period}.csv`);
+        const arenaPrefix = (appSettings?.arenaName || 'pixel_gaming').replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
+        link.setAttribute("download", `${arenaPrefix}_history_${period}.csv`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);

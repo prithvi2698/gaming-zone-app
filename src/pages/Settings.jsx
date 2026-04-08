@@ -58,19 +58,35 @@ const Settings = () => {
 
     const handleSaveArena = async () => {
         const newVal = { ...appSettings, arenaName: tempArenaName }; 
-        if (supabase) await supabase.from('app_settings').upsert({ key: 'GLOBAL_SETTINGS', value: newVal });
+        setAppSettings(newVal);
+        if (supabase) {
+            await supabase.from('app_settings').upsert({ key: 'GLOBAL_SETTINGS', value: newVal });
+            // Sync owner profile name (ID 1) with new arena name
+            await supabase.from('staff_profiles').update({ name: tempArenaName }).eq('id', '1');
+        }
+        // Also update local state for fast UI refresh if they don't want to wait for subscription
+        const updatedStaff = [...staffProfiles];
+        const ownerIdx = updatedStaff.findIndex(s => s.id === '1' || s.role === 'Owner');
+        if (ownerIdx !== -1) {
+            updatedStaff[ownerIdx].name = tempArenaName;
+            setStaffProfiles(updatedStaff);
+        }
+
         showToast('Arena Name Updated');
         closeModal();
     };
 
     const handleSaveHours = async () => {
         const newVal = { ...appSettings, openTime: tempOpenTime, closeTime: tempCloseTime };
+        setAppSettings(newVal);
         if (supabase) await supabase.from('app_settings').upsert({ key: 'GLOBAL_SETTINGS', value: newVal });
         showToast('Working Hours Updated');
         closeModal();
     };
 
     const handleSavePricing = async () => {
+        setPC_RATES(tempPCRates);
+        setPS5_RATES(tempPS5Rates);
         if (supabase) {
             await supabase.from('app_settings').upsert({ key: 'PC_RATES', value: tempPCRates });
             await supabase.from('app_settings').upsert({ key: 'PS5_RATES', value: tempPS5Rates });

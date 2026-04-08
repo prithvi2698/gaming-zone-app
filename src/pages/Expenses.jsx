@@ -4,7 +4,7 @@ import { supabase } from '../lib/supabase';
 import { playSound } from '../lib/sounds';
 
 const Expenses = () => {
-    const { expenses, setExpenses, showToast } = useAppContext();
+    const { expenses, setExpenses, showToast, appSettings } = useAppContext();
     const [modalOpen, setModalOpen] = useState(false);
     const [form, setForm] = useState({ name: '', amount: '', category: 'Other', date: new Date().toISOString().slice(0, 10) });
 
@@ -59,7 +59,8 @@ const Expenses = () => {
         const encodedUri = encodeURI(csvContent);
         const link = document.createElement("a");
         link.setAttribute("href", encodedUri);
-        link.setAttribute("download", `battle_arena_expenses.csv`);
+        const arenaPrefix = (appSettings?.arenaName || 'pixel_gaming').replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
+        link.setAttribute("download", `${arenaPrefix}_expenses.csv`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);

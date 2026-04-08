@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom';
 import { useAppContext } from '../../context/AppContext';
 
 const Sidebar = () => {
-    const { activeProfile, setActiveProfile } = useAppContext();
+    const { activeProfile, setActiveProfile, getLogoParts } = useAppContext();
     const initials = (activeProfile?.name || 'BA').split(' ').map(w => w[0] || '').join('').toUpperCase().slice(0, 2);
     const role = activeProfile?.role || 'Staff';
 
@@ -16,7 +16,8 @@ const Sidebar = () => {
         <aside className="sidebar">
             <div className="sidebar-logo">
                 <div className="logo" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    BATTLE<span style={{ fontSize: '10px', color: 'var(--success)' }}>🟢 LIVE</span>
+                    <span>{getLogoParts().first}<span style={{ color: 'var(--neon)' }}>{getLogoParts().rest}</span></span>
+                    <span style={{ fontSize: '10px', color: 'var(--success)' }}>🟢 LIVE</span>
                 </div>
                 <div className="staff-badge">STAFF PANEL</div>
             </div>

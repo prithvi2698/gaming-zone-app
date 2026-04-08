@@ -24,19 +24,19 @@ export const AppProvider = ({ children }) => {
 
     // App Settings
     const [appSettings, setAppSettings] = useState({
-        arenaName: 'Battle Arena – Kalyan Branch',
+        arenaName: 'Pixel Gaming – Kalyan Branch',
         openTime: '10:00',
         closeTime: '23:00',
         staffName: 'Ravi Kumar',
         staffRole: 'Manager',
         pin: '1234',
-        recoveryEmail: 'owner@battlearena.com',
+        recoveryEmail: 'owner@pixelgaming.com',
         recoveryPhone: '+91 9999999999',
         notifications: { sessionAlerts: true, paymentAlerts: true, dailyReports: false }
     });
 
     const [staffProfiles, setStaffProfiles] = useState([
-        { id: '1', name: 'Battle Arena', role: 'Owner', pin: '1111', is_active: true },
+        { id: '1', name: 'Pixel Gaming', role: 'Owner', pin: '1111', is_active: true },
         { id: '2', name: 'Ravi Kumar', role: 'Manager', pin: '1234', is_active: true },
         { id: '3', name: 'Staff Desk', role: 'Staff', pin: '0000', is_active: true }
     ]);
@@ -110,6 +110,13 @@ export const AppProvider = ({ children }) => {
         if (station.startsWith('PC')) return PC_RATES[mins] || 0;
         return 0;
     }, [PS5_RATES, PC_RATES]);
+
+    const getLogoParts = useCallback(() => {
+        const mainName = (appSettings.arenaName || 'PIXEL').split(/[-–,]/)[0].trim();
+        const words = mainName.split(' ');
+        if (words.length === 1) return { first: words[0].toUpperCase(), rest: '' };
+        return { first: words[0].toUpperCase(), rest: words.slice(1).join(' ').toUpperCase() };
+    }, [appSettings.arenaName]);
 
     // Initial Supabase Data Fetch & Subscriptions
     useEffect(() => {
@@ -255,7 +262,7 @@ export const AppProvider = ({ children }) => {
         unlockedPages, addUnlocked,
         toastMessage, toastError, showToast,
         notifications, setNotifications, pushNotif,
-        getRate
+        getRate, getLogoParts
     };
 
     return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

@@ -116,7 +116,8 @@ const Owner = () => {
         const encodedUri = encodeURI(csvContent);
         const link = document.createElement("a");
         link.setAttribute("href", encodedUri);
-        link.setAttribute("download", `battle_arena_sessions_${period}.csv`);
+        const arenaPrefix = (appSettings?.arenaName || 'pixel_gaming').replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
+        link.setAttribute("download", `${arenaPrefix}_sessions_${period}.csv`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);

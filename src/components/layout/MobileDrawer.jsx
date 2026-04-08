@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom';
 import { useAppContext } from '../../context/AppContext';
 
 const MobileDrawer = ({ isOpen, onClose }) => {
-    const { appSettings } = useAppContext();
+    const { appSettings, getLogoParts } = useAppContext();
     const initials = (appSettings.staffName || 'BA').split(' ').map(w => w[0] || '').join('').toUpperCase().slice(0, 2);
     const role = appSettings.staffRole || 'Staff';
 
@@ -14,7 +14,7 @@ const MobileDrawer = ({ isOpen, onClose }) => {
     return (
         <div className={`mobile-drawer ${isOpen ? 'open' : ''}`}>
             <div className="drawer-logo">
-                <div className="logo">BATTLE<span>ARENA</span></div>
+                <div className="logo">{getLogoParts().first}<span>{getLogoParts().rest}</span></div>
                 <div className="staff-badge">STAFF PANEL</div>
             </div>
 

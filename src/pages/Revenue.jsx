@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useAppContext } from '../context/AppContext';
 
 const Revenue = () => {
-    const { history, expenses, showToast } = useAppContext();
+    const { history, expenses, showToast, appSettings } = useAppContext();
     const [period, setPeriod] = useState('month');
 
     // Simple period filter function
@@ -52,7 +52,8 @@ const Revenue = () => {
         const encodedUri = encodeURI(csvContent);
         const link = document.createElement("a");
         link.setAttribute("href", encodedUri);
-        link.setAttribute("download", `battle_arena_revenue_${period}.csv`);
+        const arenaPrefix = (appSettings?.arenaName || 'pixel_gaming').replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
+        link.setAttribute("download", `${arenaPrefix}_revenue_${period}.csv`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
